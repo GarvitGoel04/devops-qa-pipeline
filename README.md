@@ -16,8 +16,6 @@ This project demonstrates a complete CI/CD pipeline using **Jenkins**, **Docker*
 
 ## 📁 Project Structure
 
-## 📁 Project Structure
-
 devops-qa-pipeline/
 ├── api/ # Express.js sample API (Dockerized)
 ├── newman/
