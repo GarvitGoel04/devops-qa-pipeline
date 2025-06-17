@@ -1,0 +1,45 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build API Docker Image') {
+            steps {
+                script {
+                    docker.build('api', './api')
+                }
+            }
+        }
+
+        stage('Run API Container') {
+            steps {
+                script {
+                    sh 'docker run -d -p 3000:3000 --name api-container api'
+                    sleep 10
+                }
+            }
+        }
+
+        stage('Run Newman Tests') {
+            steps {
+                script {
+                    sh 'docker run --rm -v ${PWD}/newman:/etc/newman newman-tests run postman_collection.json -r htmlextra --reporter-htmlextra-export /etc/newman/reports/report.html'
+                }
+            }
+        }
+
+        stage('Stop API Container') {
+            steps {
+                script {
+                    sh 'docker stop api-container'
+                    sh 'docker rm api-container'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            archiveArtifacts artifacts: 'newman/reports/*.html', allowEmptyArchive: true
+        }
+    }
+}
